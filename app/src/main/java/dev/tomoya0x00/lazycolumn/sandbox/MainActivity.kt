@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                                 selected = !useOptimization,
                                 onClick = { useOptimization = false }
                             )
-                            Text(text = "Without Optimization (A)")
+                            Text(text = "Without Optimization (E)")
                         }
 
                         // Update JankStats state
@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
                         if (useOptimization) {
                             MainContentD(data = dummy)
                         } else {
-                            MainContentA(data = dummy)
+                            MainContentE(data = dummy)
                         }
                     }
                 }
