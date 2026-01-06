@@ -11,4 +11,4 @@ data class DummyData(
     val rowIds: List<String>,
 )
 
-const val dummyImageUrl = "https://via.placeholder.com/160x90.png"
+const val dummyImageUrl = "https://placehold.jp/24/cc9999/993333/160x90.png"
