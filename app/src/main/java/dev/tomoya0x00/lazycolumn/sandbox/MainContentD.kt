@@ -2,6 +2,7 @@ package dev.tomoya0x00.lazycolumn.sandbox
 
 import LazyBox
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,11 +27,12 @@ import dev.tomoya0x00.lazycolumn.sandbox.ui.ModifierCacheHolder
 import dev.tomoya0x00.lazycolumn.sandbox.ui.SimpleAsyncImage
 
 /**
- * Created by tomoya0x00 on 2022/03/12.
+ * MainContentD - With optimization (ModifierCacheHolder + ClickWrapper)
  */
 @Composable
 fun MainContentD(
-    data: List<DummyData>
+    data: List<DummyData>,
+    itemClickListener: DummyItemClickListener,
 ) {
     val modifierCacheHolder = remember {
         ModifierCacheHolder()
@@ -43,6 +46,7 @@ fun MainContentD(
             MainRowD(
                 modifierCacheHolder = modifierCacheHolder,
                 data = it,
+                itemClickListener = itemClickListener,
             )
         }
     }
@@ -52,6 +56,7 @@ fun MainContentD(
 private fun MainRowD(
     modifierCacheHolder: ModifierCacheHolder,
     data: DummyData,
+    itemClickListener: DummyItemClickListener,
 ) {
     Column(
         modifier = modifierCacheHolder.getOrCreate(tag = "MainRowRoot") {
@@ -76,13 +81,18 @@ private fun MainRowD(
             },
         ) {
             LazyRow {
-                items(
-                    items = data.rowIds,
-                    key = { it },
-                ) { rowId ->
+                itemsIndexed(
+                    items = data.rowItems,
+                    key = { _, item -> item.id },
+                ) { index, item ->
                     MainItemD(
                         modifierCacheHolder = modifierCacheHolder,
-                        text = "${data.columnId}_$rowId",
+                        text = "${data.columnId}_${item.id}",
+                        onClick = item.clickWrapper.getOrCreateOnItemClick(
+                            listener = itemClickListener,
+                            columnId = data.columnId,
+                            rowPosition = index,
+                        ),
                     )
                 }
             }
@@ -94,6 +104,7 @@ private fun MainRowD(
 private fun MainItemD(
     modifierCacheHolder: ModifierCacheHolder,
     text: String,
+    onClick: () -> Unit,
 ) {
     Box(
         modifier = modifierCacheHolder.getOrCreate(tag = "MainItemRoot") {
@@ -105,7 +116,7 @@ private fun MainItemD(
                     color = MaterialTheme.colors.surface,
                 )
                 .clip(MaterialTheme.shapes.medium)
-        },
+        }.clickable(onClick = onClick),
     ) {
         SimpleAsyncImage(
             modifier = modifierCacheHolder.getOrCreate(tag = "MainItemImage") {
