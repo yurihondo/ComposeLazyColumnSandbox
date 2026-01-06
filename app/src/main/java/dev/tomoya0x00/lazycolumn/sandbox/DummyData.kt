@@ -8,7 +8,13 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class DummyData(
     val columnId: Int,
-    val rowIds: List<String>,
+    val rowItems: List<DummyRowItemData>,
+)
+
+@Immutable
+data class DummyRowItemData(
+    val id: String,
+    val clickWrapper: DummyItemClickWrapper,
 )
 
 const val dummyImageUrl = "https://placehold.jp/24/cc9999/993333/160x90.png"

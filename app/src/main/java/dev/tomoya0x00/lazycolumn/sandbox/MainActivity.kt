@@ -76,10 +76,18 @@ class MainActivity : ComponentActivity() {
                         )
 
                         // Content
+                        val itemClickListener = remember {
+                            object : DummyItemClickListener {
+                                override fun onItemClick(itemId: String, columnId: Int, rowPosition: Int) {
+                                    // No-op for performance testing
+                                }
+                            }
+                        }
+
                         if (useOptimization) {
-                            MainContentD(data = dummy)
+                            MainContentD(data = dummy, itemClickListener = itemClickListener)
                         } else {
-                            MainContentE(data = dummy)
+                            MainContentE(data = dummy, itemClickListener = itemClickListener)
                         }
                     }
                 }
@@ -101,6 +109,11 @@ class MainActivity : ComponentActivity() {
 val dummy = (0..100).map { cnt ->
     DummyData(
         columnId = cnt,
-        rowIds = (0..10).map { "$it" }
+        rowItems = (0..10).map { rowId ->
+            DummyRowItemData(
+                id = "$rowId",
+                clickWrapper = DummyItemClickWrapper(itemId = "${cnt}_$rowId"),
+            )
+        }
     )
 }
