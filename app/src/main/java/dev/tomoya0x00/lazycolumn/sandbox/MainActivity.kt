@@ -47,6 +47,15 @@ class MainActivity : ComponentActivity() {
                     var useOptimization by remember { mutableStateOf(true) }
 
                     Column {
+                        // Compose Version Title
+                        Text(
+                            text = "Compose: ${BuildConfig.COMPOSE_VERSION}",
+                            style = MaterialTheme.typography.h6,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+
                         // Toggle UI
                         Row(
                             modifier = Modifier

@@ -18,6 +18,11 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        buildConfigField "String", "COMPOSE_VERSION", "\"$compose_version\""
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     buildTypes {
