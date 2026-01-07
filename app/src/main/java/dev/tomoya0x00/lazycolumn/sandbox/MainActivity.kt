@@ -4,15 +4,22 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +51,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    var useOptimization by remember { mutableStateOf(true) }
+                    var selectedContent by remember { mutableStateOf("D") }
 
                     Column {
                         // Compose Version Title
@@ -58,30 +65,36 @@ class MainActivity : ComponentActivity() {
 
                         // Toggle UI
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
                         ) {
-                            RadioButton(
-                                selected = useOptimization,
-                                onClick = { useOptimization = true }
+                            CompactOption(
+                                selected = selectedContent == "D",
+                                onClick = { selectedContent = "D" },
+                                label = "Full",
+                                desc = "Cache+Wrap+Lazy",
+                                modifier = Modifier.weight(1f),
                             )
-                            Text(
-                                text = "With Optimization (D)",
-                                modifier = Modifier.padding(end = 16.dp)
+                            CompactOption(
+                                selected = selectedContent == "E",
+                                onClick = { selectedContent = "E" },
+                                label = "LazyBox",
+                                desc = "LazyBox only",
+                                modifier = Modifier.weight(1f),
                             )
-                            RadioButton(
-                                selected = !useOptimization,
-                                onClick = { useOptimization = false }
+                            CompactOption(
+                                selected = selectedContent == "F",
+                                onClick = { selectedContent = "F" },
+                                label = "Plain",
+                                desc = "No optimization",
+                                modifier = Modifier.weight(1f),
                             )
-                            Text(text = "Without Optimization (E)")
                         }
 
                         // Update JankStats state
                         metricsStateHolder.state?.putState(
-                            "Optimization",
-                            if (useOptimization) "Enabled" else "Disabled"
+                            "Content",
+                            selectedContent
                         )
 
                         // Content
@@ -93,10 +106,10 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        if (useOptimization) {
-                            MainContentD(data = dummy, itemClickListener = itemClickListener)
-                        } else {
-                            MainContentE(data = dummy)
+                        when (selectedContent) {
+                            "D" -> MainContentD(data = dummy, itemClickListener = itemClickListener)
+                            "E" -> MainContentE(data = dummy)
+                            "F" -> MainContentF(data = dummy)
                         }
                     }
                 }
@@ -125,4 +138,35 @@ val dummy = (0..100).map { cnt ->
             )
         }
     )
+}
+
+@Composable
+private fun CompactOption(
+    selected: Boolean,
+    onClick: () -> Unit,
+    label: String,
+    desc: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .padding(horizontal = 8.dp)
+            .selectable(selected = selected, onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = onClick,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.size(4.dp))
+        Column(modifier = Modifier.padding(start = 2.dp)) {
+            Text(text = label, style = MaterialTheme.typography.caption)
+            Text(
+                text = desc,
+                style = MaterialTheme.typography.overline,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+            )
+        }
+    }
 }
