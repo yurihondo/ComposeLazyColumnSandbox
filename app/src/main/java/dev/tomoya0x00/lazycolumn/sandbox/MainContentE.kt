@@ -35,7 +35,6 @@ import dev.tomoya0x00.lazycolumn.sandbox.ui.SimpleAsyncImage
 @Composable
 fun MainContentE(
     data: List<DummyData>,
-    itemClickListener: DummyItemClickListener,
 ) {
     LazyColumn {
         itemsIndexed(
@@ -44,7 +43,6 @@ fun MainContentE(
         ) { _, item ->
             MainRowE(
                 data = item,
-                itemClickListener = itemClickListener,
             )
         }
     }
@@ -53,7 +51,6 @@ fun MainContentE(
 @Composable
 private fun MainRowE(
     data: DummyData,
-    itemClickListener: DummyItemClickListener,
 ) {
     Column(
         modifier = Modifier.padding(top = 8.dp),
@@ -75,17 +72,9 @@ private fun MainRowE(
                 itemsIndexed(
                     items = data.rowItems,
                     key = { _, item -> item.id },
-                ) { index, item ->
+                ) { _, item ->
                     MainItemE(
                         text = "${data.columnId}_${item.id}",
-                        // No ClickWrapper - lambda is created on every recomposition
-                        onClick = {
-                            itemClickListener.onItemClick(
-                                itemId = item.id,
-                                columnId = data.columnId,
-                                rowPosition = index,
-                            )
-                        },
                     )
                 }
             }
@@ -96,7 +85,6 @@ private fun MainRowE(
 @Composable
 private fun MainItemE(
     text: String,
-    onClick: () -> Unit,
 ) {
     // No ModifierCacheHolder - Modifiers are created on every recomposition
     Box(
@@ -108,7 +96,7 @@ private fun MainItemE(
                 color = MaterialTheme.colors.surface,
             )
             .clip(MaterialTheme.shapes.medium)
-            .clickable(onClick = onClick),
+            .clickable(onClick = {}),
     ) {
         SimpleAsyncImage(
             modifier = Modifier.fillMaxSize(),

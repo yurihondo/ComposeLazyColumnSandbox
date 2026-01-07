@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                         if (useOptimization) {
                             MainContentD(data = dummy, itemClickListener = itemClickListener)
                         } else {
-                            MainContentE(data = dummy, itemClickListener = itemClickListener)
+                            MainContentE(data = dummy)
                         }
                     }
                 }
